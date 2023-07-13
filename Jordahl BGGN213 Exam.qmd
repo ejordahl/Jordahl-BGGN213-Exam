@@ -1,0 +1,86 @@
+---
+title: "First Year Exam - Bioinformatics"
+author: "Eric Jordahl (A59109089)"
+format: pdf
+---
+
+**Process the Data**
+
+*Read the Data*
+
+First we will read the data frame and output the first 6 lines to check that the data looks correct.
+
+```{r}
+c <-read.csv("covid19_variants.csv")
+head(c)
+```
+*Filter out Variants*
+
+Then we will to work with the data by removing variant categories that we do not want, like Other and Total.
+
+```{r}
+library(ggplot2)
+library(dplyr)
+filtered_c <- c %>% filter(variant_name != "Other" & 
+                             variant_name != "Total") 
+```
+
+*Change Date Format*
+
+We will then change the date column to be a numerical variable rather than a character one 
+
+```{r}
+date_num <- as.Date(filtered_c$date)
+```
+
+**Plot the Data**
+
+Then we will plot the line graph for the first time with date on the x and percentage on the y.
+
+```{r}
+plot1 <- ggplot(data=filtered_c, 
+                aes(x=date_num, y=percentage, 
+                    col=variant_name)) + 
+  geom_line()
+plot1
+```
+*Add Axis Labels*
+
+Now we will add a title and correct the axis labels.
+
+```{r}
+plot2 <- plot1 + labs(y="Percentage of Sequence Specimens", 
+                      x=" ", 
+                      title = "COVID-19 Variants in California")
+plot2
+```
+
+*Remove Legend Title*
+
+We will then remove the legend title 
+
+```{r}
+plot3 <- plot2 + theme(legend.title=element_blank())
+plot3
+```
+*Adjust X Axis Breaks and Labeling*
+
+Now we will adjust the x axis to show each month not years
+
+```{r}
+plot4 <- plot3 + scale_x_date(date_breaks="1 month", date_labels="%b-%y") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+plot4
+```
+
+*Add data source*
+
+Now we will add a caption with where the data was obtained from
+
+```{r}
+plot5 <- plot4 + 
+  labs(caption="Data Source:https://data.chhs.ca.gov/") + 
+  theme(plot.caption=element_text(hjust=0.5))
+plot5
+```
+
